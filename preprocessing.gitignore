@@ -1,0 +1,47 @@
+#we are extracting the data from kaggle website 
+!mkdir -p ~/.kaggle
+!cp kaggle.json ~/.kaggle/
+#we have to install one token of our dataset  and import that data using below command
+!kaggle datasets download -d pranavraikokte/covid19-image-dataset
+from tensorflow import keras
+#we have to unzip the file 
+import zipfile
+zip_ref = zipfile.ZipFile('/content/covid19-image-dataset.zip', 'r')
+zip_ref.extractall('/content')
+zip_ref.close()
+
+import os
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.applications import VGG16
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+
+train_data_dir = "/content/Covid19-dataset/train"
+test_data_dir = "/content/Covid19-dataset/test"
+img_width, img_height = 224, 224
+batch_size = 32
+
+train_datagen = ImageDataGenerator(rescale=1.0/255.0)
+test_datagen = ImageDataGenerator(rescale=1.0/255.0)
+
+train_generator = train_datagen.flow_from_directory(
+    train_data_dir,
+    target_size=(img_width, img_height),
+    batch_size=batch_size,
+    class_mode='categorical',
+    shuffle=False
+)
+
+
+test_generator = test_datagen.flow_from_directory(
+    test_data_dir,
+    target_size=(img_width, img_height),
+    batch_size=batch_size,
+    class_mode='categorical',
+    shuffle=False
+)
+
+
